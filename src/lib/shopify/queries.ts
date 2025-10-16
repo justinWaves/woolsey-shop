@@ -118,7 +118,7 @@ export const getProductByHandleQuery = /* GraphQL */ `
 export const getProductsQuery = /* GraphQL */ `
   ${productFragment}
   query getProducts($first: Int = 20, $after: String) {
-    products(first: $first, after: $after) {
+    products(first: $first, after: $after, query: "status:active") {
       edges {
         node {
           ...ProductFragment

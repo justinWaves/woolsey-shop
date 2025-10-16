@@ -11,14 +11,6 @@ export function ProductCard({ product }: ProductCardProps) {
   const images = product.images.edges.map((edge) => edge.node);
   const image = images[0];
   
-  // Debug logging
-  console.log('ProductCard:', {
-    title: product.title,
-    hasImages: images.length > 0,
-    firstImageUrl: image?.url,
-    imageCount: images.length,
-  });
-  
   const price = formatPrice(
     product.priceRange.minVariantPrice.amount,
     product.priceRange.minVariantPrice.currencyCode
