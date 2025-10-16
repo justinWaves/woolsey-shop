@@ -1,36 +1,181 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Woolsey Creations
+
+A headless Shopify storefront for artist-made apparel and merchandise, built with Next.js 15, Tailwind CSS v4, and the Shopify Storefront API.
+
+## Features
+
+- 🎨 **Clean, minimalist design** optimized for sharing product pages on social media
+- ⚡ **Lightning-fast** with Next.js App Router, ISR, and Turbopack
+- 🛒 **Direct-to-checkout** flow powered by Shopify
+- 🖼️ **Artist-focused** collections (artists mapped as Shopify collections)
+- 📱 **Fully responsive** with mobile-first approach
+- 🔍 **SEO-optimized** with Open Graph tags and product schema
+- 🎯 **Webhook-driven revalidation** for real-time updates
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS v4
+- **Commerce**: Shopify Storefront API
+- **Deployment**: Vercel
+- **Fonts**: Inter (body), Space Grotesk (display)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ installed
+- A Shopify store with custom app created
+- Shopify Storefront API access token
+
+### Installation
+
+1. Clone the repository and install dependencies:
+
+```bash
+npm install
+```
+
+2. Create `.env.local` file with your Shopify credentials:
+
+```env
+SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=your_storefront_access_token
+SHOPIFY_API_VERSION=2024-07
+
+NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# Optional: for webhook revalidation
+REVALIDATE_SECRET=your_random_secret_string
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see your store.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── api/revalidate/       # Webhook handler for cache revalidation
+│   ├── artists/              # Artists (collections) listing page
+│   ├── collections/[handle]/ # Individual artist/collection pages
+│   ├── product/[handle]/     # Product detail pages
+│   ├── shop/                 # All products page
+│   ├── layout.tsx            # Root layout with header/footer
+│   └── page.tsx              # Home page
+├── components/
+│   ├── ui/                   # Reusable UI components (Button, Badge)
+│   ├── header.tsx            # Site header
+│   ├── footer.tsx            # Site footer
+│   ├── product-card.tsx      # Product card component
+│   ├── product-gallery.tsx   # Product image gallery
+│   └── variant-selector.tsx  # Product variant selector
+└── lib/
+    └── shopify/              # Shopify API client and types
+        ├── index.ts          # Main API functions
+        ├── client.ts         # Fetch client and utilities
+        ├── queries.ts        # GraphQL queries
+        └── types.ts          # TypeScript types
+```
 
-## Learn More
+## Deployment to Vercel
 
-To learn more about Next.js, take a look at the following resources:
+### 1. Push to GitHub
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. Deploy on Vercel
 
-## Deploy on Vercel
+1. Go to [vercel.com](https://vercel.com) and import your repository
+2. Add environment variables in Project Settings → Environment Variables:
+   - `SHOPIFY_STORE_DOMAIN`
+   - `SHOPIFY_STOREFRONT_ACCESS_TOKEN`
+   - `SHOPIFY_API_VERSION`
+   - `NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN`
+   - `NEXT_PUBLIC_SITE_URL` (your production URL)
+   - `REVALIDATE_SECRET` (optional, for webhooks)
+3. Deploy!
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Set Up Webhooks (Optional)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+To automatically revalidate cached pages when products/collections change:
+
+1. In Shopify Admin → Apps → Your custom app → Webhooks
+2. Add webhooks for:
+   - `products/create` → `https://your-domain.com/api/revalidate?secret=YOUR_SECRET`
+   - `products/update` → `https://your-domain.com/api/revalidate?secret=YOUR_SECRET`
+   - `products/delete` → `https://your-domain.com/api/revalidate?secret=YOUR_SECRET`
+   - `collections/create` → `https://your-domain.com/api/revalidate?secret=YOUR_SECRET`
+   - `collections/update` → `https://your-domain.com/api/revalidate?secret=YOUR_SECRET`
+   - `collections/delete` → `https://your-domain.com/api/revalidate?secret=YOUR_SECRET`
+
+## Shopify Setup
+
+### Collections as Artists
+
+Each artist should have their own collection in Shopify:
+
+1. Create a collection (e.g., "Artist: Bailey")
+2. Add a description (artist bio)
+3. Upload a collection image (artist photo/artwork)
+4. Assign products to the collection
+
+### Product Configuration
+
+For apparel products:
+
+1. Add multiple product images
+2. Create variants for Size (S, M, L, XL, etc.)
+3. Optional: add Color variants
+4. Set proper inventory tracking
+5. Add descriptive tags
+6. Ensure products are published to your custom app's sales channel
+
+## Customization
+
+### Design Tokens
+
+Edit design tokens in `src/app/globals.css`:
+
+```css
+:root {
+  --background: #FFFFFF;
+  --foreground: #0A0A0A;
+  --accent: #5E8BF7;  /* Change brand color here */
+  /* ... */
+}
+```
+
+### Revalidation Time
+
+Adjust ISR revalidation in page files:
+
+```typescript
+export const revalidate = 3600; // 1 hour (in seconds)
+```
+
+## Performance
+
+- **ISR (Incremental Static Regeneration)**: Pages cached for 1 hour by default
+- **Image Optimization**: Next.js Image component with Shopify CDN
+- **Edge-ready**: Can be deployed to Vercel Edge
+- **Webhook revalidation**: Real-time updates without waiting for cache expiry
+
+## License
+
+MIT
+
+## Support
+
+For questions or issues, please open an issue on GitHub.
